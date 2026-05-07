@@ -1,6 +1,7 @@
 import random
 
 class AlgoritmoGenetico:
+    
     def __init__(self, tam_poblacion, longitud_genoma, tasa_mutacion, num_generaciones):
         self.tam_poblacion = tam_poblacion
         self.longitud_genoma = longitud_genoma
