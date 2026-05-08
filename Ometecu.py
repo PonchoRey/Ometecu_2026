@@ -11,7 +11,6 @@ from red_neuronal import Red
 
 class Ometecu:
 
-
     def __init__(self):
         # 1. Instanciamos los objetos propios de esta clase
         self.cerebro = Cerebro()

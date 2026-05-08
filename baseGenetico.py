@@ -8,6 +8,15 @@ class AlgoritmoGenetico:
         self.tasa_mutacion = tasa_mutacion
         self.num_generaciones = num_generaciones
         self.poblacion = []
+        self.poblacion_con_fitness = []
+
+    def set_poblacion_fitnees(self, array_fitnees, array_poblacion):
+        for index, red in enumerate(array_poblacion):
+            genoma = red.get_memoria()
+            genoma_con_fitness = list(genoma) + [array_fitnees[index]] #FITNESS INICIAL
+            self.poblacion_con_fitness.append(genoma_con_fitness)
+        
+        self.set_poblacion(self.poblacion_con_fitness)
 
     def inicializar_poblacion(self):
         self.poblacion = [[round(random.uniform(0.1, 0.9), 1) for _ in range(self.longitud_genoma)] for _ in range(self.tam_poblacion)]
@@ -18,7 +27,6 @@ class AlgoritmoGenetico:
     def get_poblacion(self):
         return self.poblacion
     
-
     def calcular_aptitud(self, genoma):
         # Debe ser implementada de acuerdo con el problema específico
         return genoma[-1]  # Ejemplo de función de aptitud
