@@ -124,7 +124,7 @@ class Red:
         for x in range(len(self.neuOcultasY1)):
             # SE DEFINE CON VALOR "1" POR EL DISEÑO DE RED, CADA ENTRA ES UNA NEURONA
             # POR LO CUAL SOLO TIENE UNA RAMA DE PESO.
-            self.neuOcultasY1[x].setNumEntras(1)  # NO SOLO SE ASIGNADA LA ENTRA, TAMBIEN EL PESO DE LA MISMA.
+            self.neuOcultasY1[x].setNumEntras(num)  # NO SOLO SE ASIGNADA LA ENTRA, TAMBIEN EL PESO DE LA MISMA.
 
         # Configura que Y2 reciba tantas entradas como salidas tenga Y1
         for x in range(len(self.neuOcultasY2)):
@@ -140,7 +140,7 @@ class Red:
         """
         self.entradas = len(var)
         for x in range(len(self.neuOcultasY1)):
-            self.neuOcultasY1[x].setValoresEntras([var[x]])
+            self.neuOcultasY1[x].setValoresEntras(var)
 
     def valorEntrenamiento(self, var):
         """

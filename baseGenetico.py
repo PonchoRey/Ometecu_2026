@@ -11,6 +11,7 @@ class AlgoritmoGenetico:
         self.poblacion_con_fitness = []
 
     def set_poblacion_fitnees(self, array_fitnees, array_poblacion):
+        array_fitnees = [1 if valor == 0 else valor for valor in array_fitnees]
         for index, red in enumerate(array_poblacion):
             genoma = red.get_memoria()
             genoma_con_fitness = list(genoma) + [array_fitnees[index]] #FITNESS INICIAL
@@ -45,7 +46,7 @@ class AlgoritmoGenetico:
         for i in range(self.longitud_genoma):
             if random.random() < self.tasa_mutacion:
                 if not i == self.longitud_genoma:
-                    genoma[i] = round(random.uniform(0.1, 0.9), 1)
+                    genoma[i] = round(random.uniform(-0.9, 0.9), 10)
         return genoma
 
     def ejecutar(self):
@@ -55,10 +56,17 @@ class AlgoritmoGenetico:
             seleccionados = self.seleccion()
 
             nueva_poblacion = []
-            for i in range(0, self.tam_poblacion, 2):
+            
+            # --- AGREGADO: ELITISMO ---
+            # Guardamos a los 2 mejores intactos (sin cruce ni mutación)
+            nueva_poblacion.extend([seleccionados[0], seleccionados[1]])
+            # --------------------------
+
+            # Tu ciclo original, solo le restamos 2 al tamaño para dejarle espacio a los elites
+            for i in range(0, self.tam_poblacion - 2, 2):
                 padre1, padre2 = seleccionados[i], seleccionados[i+1]
                 hijo1, hijo2 = self.cruce(padre1, padre2)
-                nueva_poblacion.extend([self.mutacion(hijo1), self.mutacion(hijo2)])
+                nueva_poblacion.extend([self.mutacion(hijo1), hijo2])
 
             self.poblacion = nueva_poblacion
 

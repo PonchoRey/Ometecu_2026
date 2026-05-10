@@ -59,6 +59,9 @@ class Ometecu:
 
     def set_valor_aprender(self, var):
         self.variablesEntrenamiento = var
+
+    def funcionActivacion(self, r1, r2, r3):
+        self.red.funcionActivacion(r1, r2, r3)
      
 
     def set_config_red(self, capa_inicial, capa_intermedia, capa_final, synapsis=True):
