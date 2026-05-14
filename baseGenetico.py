@@ -1,15 +1,43 @@
 import random
 
 class AlgoritmoGenetico:
+    
     def __init__(self, tam_poblacion, longitud_genoma, tasa_mutacion, num_generaciones):
         self.tam_poblacion = tam_poblacion
         self.longitud_genoma = longitud_genoma
         self.tasa_mutacion = tasa_mutacion
         self.num_generaciones = num_generaciones
         self.poblacion = []
+        self.poblacion_con_fitness = []
+
+    def redes_genetico(self, array_fitnees, array_redes):
+        self.poblacion_con_fitness = []
+        array_fitnees = [1 if valor == 0 else valor for valor in array_fitnees]
+        for index, red in enumerate(array_redes):
+            genoma = red.get_memoria()
+            genoma_con_fitness = list(genoma) + [array_fitnees[index]] #FITNESS INICIAL
+            self.poblacion_con_fitness.append(genoma_con_fitness)
+        self.set_poblacion(self.poblacion_con_fitness)
+
+        self.ejecutar()
+        
+        for index, red in enumerate(self.get_poblacion()):
+            array_redes[index].set_memoria_genetico(red[:-1])
+        
+
+        return array_redes
+    
 
     def inicializar_poblacion(self):
         self.poblacion = [[round(random.uniform(0.1, 0.9), 1) for _ in range(self.longitud_genoma)] for _ in range(self.tam_poblacion)]
+
+    def estadisticas_poblacion(self):
+
+        print("Poblacion actual -----------------------------------------------")
+        for pobla in self.poblacion_con_fitness:
+            print(pobla)
+        print("Poblacion actual -----------------------------------------------")
+
 
     def set_poblacion(self, var):
         self.poblacion = var
@@ -17,7 +45,6 @@ class AlgoritmoGenetico:
     def get_poblacion(self):
         return self.poblacion
     
-
     def calcular_aptitud(self, genoma):
         # Debe ser implementada de acuerdo con el problema específico
         return genoma[-1]  # Ejemplo de función de aptitud
@@ -36,7 +63,7 @@ class AlgoritmoGenetico:
         for i in range(self.longitud_genoma):
             if random.random() < self.tasa_mutacion:
                 if not i == self.longitud_genoma:
-                    genoma[i] = round(random.uniform(0.1, 0.9), 1)
+                    genoma[i] = round(random.uniform(-0.9, 0.9), 10)
         return genoma
 
     def ejecutar(self):
@@ -46,7 +73,14 @@ class AlgoritmoGenetico:
             seleccionados = self.seleccion()
 
             nueva_poblacion = []
-            for i in range(0, self.tam_poblacion, 2):
+            
+            # --- AGREGADO: ELITISMO ---
+            # Guardamos a los 2 mejores intactos (sin cruce ni mutación)
+            nueva_poblacion.extend([seleccionados[0], seleccionados[1]])
+            # --------------------------
+
+            # Tu ciclo original, solo le restamos 2 al tamaño para dejarle espacio a los elites
+            for i in range(0, self.tam_poblacion - 2, 2):
                 padre1, padre2 = seleccionados[i], seleccionados[i+1]
                 hijo1, hijo2 = self.cruce(padre1, padre2)
                 nueva_poblacion.extend([self.mutacion(hijo1), self.mutacion(hijo2)])

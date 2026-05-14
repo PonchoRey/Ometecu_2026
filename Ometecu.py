@@ -7,27 +7,43 @@ import math
 import numpy as np
 from multiprocessing import Pool
 from Memoria import Cerebro
-from RedNeuronal import Red
+from red_neuronal import Red
 
 class Ometecu:
 
-    cerebro = Cerebro()
-    red = Red()
+    def __init__(self):
+        # 1. Instanciamos los objetos propios de esta clase
+        self.cerebro = Cerebro()
+        self.red = Red()
 
-    cerebro.setVariables([0.9, 0.9, 0.1, 0.9])
-    cerebro.setConfig([0.2, 1, 1, 1])
-    variablesEntrenamiento = []
-    configNeo = cerebro.getConfig()
-    salidas = [0] * cerebro.numvar
-    ciclos = 1
-    red.crearRed(float(configNeo["apren"]), int(configNeo["capa1"]), int(configNeo["capa2"]),
-                 int(configNeo["capa3"]), 's', 's', 's')
-    entradas = [0.9]
-    rango_min_red = 0.1
-    rango_max_red = 0.9
-    rango_min_predic = 1
-    rango_max_predic = 10
+        # 2. Configuramos el cerebro
+        self.cerebro.setVariables([0.9, 0.9, 0.1, 0.9])
+        self.cerebro.setConfig([0.2, 1, 1, 1])
+        
+        # 3. Extraemos configuración necesaria para la Red
+        config_neo = self.cerebro.getConfig()
+        
+        # 4. Inicializamos variables de control y estado
+        self.variables_entrenamiento = []
+        self.salidas = [0] * self.cerebro.numvar
+        self.ciclos = 1
+        self.entradas = [0.9]
+        
+        # 5. Rangos de escala
+        self.rango_min_red = 0.1
+        self.rango_max_red = 0.9
+        self.rango_min_predic = 1
+        self.rango_max_predic = 10
 
+        # 6. Creamos la estructura de la red con los datos de config_neo
+        self.red.crearRed(
+            float(config_neo["apren"]), 
+            int(config_neo["capa1"]), 
+            int(config_neo["capa2"]), 
+            int(config_neo["capa3"]), 
+            's', 's', 's'
+        )
+    
     def estadisticaRed(self):
         return self.red.estadisticaRed()
 
@@ -43,6 +59,9 @@ class Ometecu:
 
     def set_valor_aprender(self, var):
         self.variablesEntrenamiento = var
+
+    def funcionActivacion(self, r1, r2, r3):
+        self.red.funcionActivacion(r1, r2, r3)
      
 
     def set_config_red(self, capa_inicial, capa_intermedia, capa_final, synapsis=True):
@@ -82,6 +101,10 @@ class Ometecu:
            
         return self.salidas
 
+
+    def set_memoria_genetico(self, memoria):
+        self.red.setMemoria(memoria)
+
     def set_memoria(self):
         self.cerebro.setMemoria(self.red.getMemoria())
     
@@ -89,6 +112,10 @@ class Ometecu:
         return self.red.getMemoria()
 
 
+
+    # ejemplo lista de edades entre 5 a 80 años, normalizar 20 años entre este rango,
+    # valor normalziar = 20, min_original = 5, maximo_original = 80.
+    # para datos mas reales.
     def normalizar_dato_individual(self, valor_a_normalizar, min_original, max_original, min_destino=0.2, max_destino=0.8):
         rango_original = max_original - min_original
         rango_destino = max_destino - min_destino

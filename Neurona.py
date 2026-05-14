@@ -5,6 +5,7 @@ import json
 import random
 import math
 from multiprocessing import Pool
+import time 
 
 class Neurona:
 
