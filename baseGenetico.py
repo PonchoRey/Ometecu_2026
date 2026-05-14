@@ -10,17 +10,34 @@ class AlgoritmoGenetico:
         self.poblacion = []
         self.poblacion_con_fitness = []
 
-    def set_poblacion_fitnees(self, array_fitnees, array_poblacion):
+    def redes_genetico(self, array_fitnees, array_redes):
+        self.poblacion_con_fitness = []
         array_fitnees = [1 if valor == 0 else valor for valor in array_fitnees]
-        for index, red in enumerate(array_poblacion):
+        for index, red in enumerate(array_redes):
             genoma = red.get_memoria()
             genoma_con_fitness = list(genoma) + [array_fitnees[index]] #FITNESS INICIAL
             self.poblacion_con_fitness.append(genoma_con_fitness)
-        
         self.set_poblacion(self.poblacion_con_fitness)
+
+        self.ejecutar()
+        
+        for index, red in enumerate(self.get_poblacion()):
+            array_redes[index].set_memoria_genetico(red[:-1])
+        
+
+        return array_redes
+    
 
     def inicializar_poblacion(self):
         self.poblacion = [[round(random.uniform(0.1, 0.9), 1) for _ in range(self.longitud_genoma)] for _ in range(self.tam_poblacion)]
+
+    def estadisticas_poblacion(self):
+
+        print("Poblacion actual -----------------------------------------------")
+        for pobla in self.poblacion_con_fitness:
+            print(pobla)
+        print("Poblacion actual -----------------------------------------------")
+
 
     def set_poblacion(self, var):
         self.poblacion = var
@@ -66,7 +83,7 @@ class AlgoritmoGenetico:
             for i in range(0, self.tam_poblacion - 2, 2):
                 padre1, padre2 = seleccionados[i], seleccionados[i+1]
                 hijo1, hijo2 = self.cruce(padre1, padre2)
-                nueva_poblacion.extend([self.mutacion(hijo1), hijo2])
+                nueva_poblacion.extend([self.mutacion(hijo1), self.mutacion(hijo2)])
 
             self.poblacion = nueva_poblacion
 

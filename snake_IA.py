@@ -8,7 +8,7 @@ from baseGenetico import AlgoritmoGenetico
 pygame.init()
 
 # --- GENETICO ---
-TAM_POBLACION_NEURONAL = 6
+TAM_POBLACION_NEURONAL = 12
 NUM_GENERACIONES = 1
 global array_poblacion_red
 array_poblacion_red = []
@@ -22,8 +22,8 @@ contador_generaciones = 0
 # --- Configuración Red Neuronal ---
 for x in range(TAM_POBLACION_NEURONAL):
     red_neuronal = Ometecu()
-    red_neuronal.set_config_red(capa_inicial=21, capa_intermedia=5, capa_final=4)
-    red_neuronal.funcionActivacion("r", "r", "r")
+    red_neuronal.set_config_red(capa_inicial=21, capa_intermedia=10, capa_final=4)
+    red_neuronal.funcionActivacion("s", "r", "r")
     valor_aleatoreo = [round(random.uniform(-0.9, 0.9), 10) for elem in red_neuronal.get_memoria()]
     red_neuronal.set_memoria_genetico(valor_aleatoreo)
     array_poblacion_red.append(red_neuronal)
@@ -58,10 +58,12 @@ fuente_puntos = pygame.font.SysFont("comicsansms", 25)
 fuente_ia = pygame.font.SysFont("consolas", 12)
 
 def algoritmo_genetico(fitnees_score):
-    ag.set_poblacion_fitnees(fitnees_score, array_poblacion_red)
-    ag.ejecutar()
-    for index, red in enumerate(ag.get_poblacion()):
-        array_poblacion_red[index].set_memoria_genetico(red[:-1])
+    # ag.set_poblacion_fitnees(fitnees_score, array_poblacion_red)
+    # ag.ejecutar()
+    # for index, red in enumerate(ag.get_poblacion()):
+    #     array_poblacion_red[index].set_memoria_genetico(red[:-1])
+    global array_poblacion_red
+    array_poblacion_red = ag.redes_genetico(fitnees_score, array_poblacion_red)
 
 def mostrar_puntuacion(puntos):
     texto_puntos = fuente_puntos.render("Puntos: " + str(puntos), True, AMARILLO)
@@ -243,7 +245,7 @@ def juego_principal():
         if muerto:
             # Ahora la puntuación se guarda correctamente sin importar de qué muera
             index_redes += 1
-            fitnees_score.append(largo_vibora * 100 )  # + tiempo_con_vida
+            fitnees_score.append((largo_vibora * 100 ) + tiempo_con_vida )  # + tiempo_con_vida
             #print(largo_vibora)
             
             if index_redes >= TAM_POBLACION_NEURONAL:
