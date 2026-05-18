@@ -1,5 +1,7 @@
 import json
 
+
+# libreria con posibilidad de mejora. 
 class Cerebro:
 
     numvar = 0
