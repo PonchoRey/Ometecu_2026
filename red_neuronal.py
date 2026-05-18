@@ -218,7 +218,6 @@ class Red:
             neu1.calcularPeso()
 
  
-
     def ejecutar(self):
         """
         Realiza el proceso de propagación hacia adelante (Feedforward).
@@ -269,6 +268,7 @@ class Red:
             aux.append(self.neuSalidas[x].getSalida())
         return aux
 
+    # oportunidad de mejora, código viejo que puede ser actualizado y optmizado 
     def setMemoria(self, var):
         """
         Carga un conjunto de pesos (memoria) previamente guardados 
@@ -305,6 +305,7 @@ class Red:
             self.neuSalidas[x].pesos = aux
 
 
+    # oportunidad de mejora, código viejo que puede ser actualizado y optmizado
     def getMemoria(self):
         """
         Extrae y devuelve todos los pesos actuales de la red en una lista plana (unidimensional).

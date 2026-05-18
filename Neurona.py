@@ -1,11 +1,5 @@
-import os
-import sys
-import time
-import json
 import random
-import math
-from multiprocessing import Pool
-import time 
+import math 
 
 class Neurona:
 
@@ -73,13 +67,11 @@ class Neurona:
         self.salida = 0
         for x in range(aux):
             self.salida += self.pesos[x] * self.entradas[x]
-            self.rawSalida = self.salida
+        
+        self.rawSalida = self.salida
 
-        if self.salida > 0:
-            self.salida = round(self.salida, 10)
-            if self.salida >= 1:
-                self.salida = 0.9
-        else:
+        # ReLU Pura: Si es menor o igual a 0, se vuelve 0. Si es mayor, se queda igual.
+        if self.salida < 0:
             self.salida = 0
 
     def errorReal(self):
