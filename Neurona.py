@@ -71,7 +71,7 @@ class Neurona:
         self.rawSalida = self.salida
 
         # ReLU Pura: Si es menor o igual a 0, se vuelve 0. Si es mayor, se queda igual.
-        if self.salida < 0:
+        if self.salida <= 0:
             self.salida = 0
 
     def errorReal(self):
