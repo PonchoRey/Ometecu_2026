@@ -1,5 +1,8 @@
-from baseGenetico import AlgoritmoGenetico
-from Ometecu import Ometecu
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+from ometecu.baseGenetico import AlgoritmoGenetico
+from ometecu.Ometecu import Ometecu
 import random
 
 TAM_POBLACION_NEURONAL = 6

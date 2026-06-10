@@ -1,9 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 import pygame
 import time
 import random
 import math
-from Ometecu import Ometecu
-from baseGenetico import AlgoritmoGenetico
+from ometecu.Ometecu import Ometecu
+from ometecu.baseGenetico import AlgoritmoGenetico
 
 # Inicializar pygame
 pygame.init()

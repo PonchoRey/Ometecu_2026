@@ -123,14 +123,20 @@ class AlgoritmoGenetico:
 
     def guardar_memoria(self, alias):
         # Abre (o crea) el archivo JSON en modo escritura
-        with open(f"synapsis_{alias}_genetico.json", "w") as archivo:
+        import os
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        filepath = os.path.join(base_dir, 'modelos', 'pesos', f"synapsis_{alias}_genetico.json")
+        with open(filepath, "w") as archivo:
             # Serializa y almacena la información del mejor individuo actual (el de la posición 0)
             json.dump(self.poblacion[0], archivo)
         
 
     def obtener_memoria(self, alias):
         # Abre el archivo JSON en modo lectura para recuperar los datos históricos
-        with open(f"synapsis_{alias}_genetico.json", "r") as archivo:
+        import os
+        base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+        filepath = os.path.join(base_dir, 'modelos', 'pesos', f"synapsis_{alias}_genetico.json")
+        with open(filepath, "r") as archivo:
             # Transforma el texto JSON de vuelta a un diccionario de Python
             datos_cargados = json.load(archivo)
         

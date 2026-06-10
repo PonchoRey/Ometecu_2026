@@ -1,8 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+
 import pygame
 import math
 import random
-from Ometecu import Ometecu
-from baseGenetico import AlgoritmoGenetico
+from ometecu.Ometecu import Ometecu
+from ometecu.baseGenetico import AlgoritmoGenetico
 
 # --- Configuración ---
 TAM_POBLACION = 40
