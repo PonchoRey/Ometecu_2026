@@ -1,4 +1,4 @@
-from Neurona import Neurona
+from .Neurona import Neurona
 
 class Red:
     """

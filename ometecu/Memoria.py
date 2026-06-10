@@ -1,5 +1,13 @@
 import json
+import os
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+def get_synapsis_path():
+    return os.path.join(BASE_DIR, 'modelos', 'pesos', 'synapsis.json')
+
+def get_variables_path():
+    return os.path.join(BASE_DIR, 'modelos', 'config', 'variables.json')
 
 # libreria con posibilidad de mejora. 
 class Cerebro:
@@ -8,11 +16,11 @@ class Cerebro:
     matriz = []
 
     def setMemoria(self, memoria):
-        with open('synapsis.json', 'w') as file:
+        with open(get_synapsis_path(), 'w') as file:
             json.dump(memoria, file, indent=4)
 
     def getMemoria(self):
-        with open('synapsis.json') as file:
+        with open(get_synapsis_path()) as file:
             memoria = json.load(file)
         return memoria
 
@@ -23,13 +31,13 @@ class Cerebro:
 
         memoria += "}"
 
-        file3 = open("variables.json", "w")
+        file3 = open(get_variables_path(), "w")
         file3.write(memoria)
         file3.close()
 
     def getVariables(self):
         pass
-        # with open('variables.json') as file:
+        # with open(get_variables_path()) as file:
         #     memoria = json.load(file)
         # self.matriz = []
         # cont = -1
@@ -44,7 +52,7 @@ class Cerebro:
 
 
     def getConfig(self):
-        with open('variables.json') as file:
+        with open(get_variables_path()) as file:
             memoria = json.load(file)
         return memoria["neo"]
 
@@ -53,6 +61,6 @@ class Cerebro:
                   ',"capa2": '+str(matriz[2])+',"capa3": '+str(matriz[3])+'}'
 
         memoria += "}"
-        file3 = open("variables.json", "w")
+        file3 = open(get_variables_path(), "w")
         file3.write(memoria)
         file3.close()

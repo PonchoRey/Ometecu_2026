@@ -1,9 +1,12 @@
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 import pygame
 import time
 import random
 import math
-from Ometecu import Ometecu
-from baseGenetico import AlgoritmoGenetico
+from ometecu.Ometecu import Ometecu
+from ometecu.baseGenetico import AlgoritmoGenetico
 
 # Inicializar pygame
 pygame.init()
@@ -11,7 +14,7 @@ pygame.init()
 # ==========================================
 #         CONFIGURACIÓN DEL GENÉTICO
 # ==========================================
-TAM_POBLACION_NEURONAL = 50  
+TAM_POBLACION_NEURONAL = 6  
 NUM_GENERACIONES = 1
 
 global array_poblacion_red, contador_generaciones, MODO_ENTRENAMIENTO_RAPIDO
@@ -26,7 +29,7 @@ MODO_ENTRENAMIENTO_RAPIDO = True  # True para entrenar a ciegas a máxima veloci
 for x in range(TAM_POBLACION_NEURONAL):
     red_neuronal = Ometecu()
     # 23 entradas debido al radar de orientación directa de la manzana
-    red_neuronal.set_config_red(capa_inicial=23, capa_intermedia=23, capa_final=4)
+    red_neuronal.set_config_red(capa_inicial=23, capa_intermedia=20, capa_final=4)
     # Híbrido: ReLU en capas ocultas, Lineal en la salida para desempate preciso
     red_neuronal.funcionActivacion("r", "r", "s")
     valor_aleatorio = [random.uniform(-0.9, 0.9) for _ in red_neuronal.get_memoria()]
@@ -38,9 +41,14 @@ ag = AlgoritmoGenetico(
     tasa_mutacion=0.05,  
     num_generaciones=NUM_GENERACIONES
 )
-
-array_poblacion_red[0].set_memoria_genetico(ag.obtener_memoria())
-
+try: 
+    array_poblacion_red[0].set_memoria_genetico(ag.obtener_memoria("snake"))
+    array_poblacion_red[1].set_memoria_genetico(ag.obtener_memoria("snake"))
+    array_poblacion_red[2].set_memoria_genetico(ag.obtener_memoria("snake"))
+    
+    print("synapsis cargada!")
+except Exception as e:
+    print("Error al cargar la synpasis:", e)
 # ==========================================
 #         CONFIGURACIÓN GRÁFICA
 # ==========================================
@@ -68,7 +76,7 @@ fuente_ia = pygame.font.SysFont("consolas", 12)
 def algoritmo_genetico(scores):
     global array_poblacion_red, contador_generaciones, MODO_ENTRENAMIENTO_RAPIDO
     array_poblacion_red = ag.redes_genetico(scores, array_poblacion_red)
-    ag.guardar_memoria()
+    ag.guardar_memoria("snake")
 
     
     contador_generaciones += 1
@@ -76,7 +84,7 @@ def algoritmo_genetico(scores):
     print(f"Mejor Score de esta gen: {max(scores)}")
     
     # Después de 100 generaciones a ciegas, activa la pantalla para evaluar visualmente
-    if contador_generaciones >= 20:
+    if contador_generaciones >= 100:
         MODO_ENTRENAMIENTO_RAPIDO = False
 
 def mostrar_puntuacion(puntos):

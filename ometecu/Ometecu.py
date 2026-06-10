@@ -1,5 +1,5 @@
-from Memoria import Cerebro
-from red_neuronal import Red
+from .Memoria import Cerebro
+from .red_neuronal import Red
 
 class Ometecu:
 
