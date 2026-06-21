@@ -8,15 +8,7 @@ class Ometecu:
         # Se crean las instancias de la memoria (Cerebro) y de la estructura neuronal (Red)
         self.cerebro = Cerebro()
         self.red = Red()
-
-        # 2. Configuramos el cerebro
-        # Inicializa variables de entorno y configuración interna del objeto Cerebro
-        self.cerebro.setVariables([0.9, 0.9, 0.1, 0.9])
-        self.cerebro.setConfig([0.2, 1, 1, 1])
-        
-        # 3. Extraemos configuración necesaria para la Red
-        # Obtiene un diccionario o estructura con los parámetros de la arquitectura de la red
-        config_neo = self.cerebro.getConfig()
+        self.nombre_synapsis = ""
         
         # 4. Inicializamos variables de control y estado
         # Parámetros para almacenar vectores de entrenamiento, salidas temporales y ciclos de ejecución
@@ -32,7 +24,20 @@ class Ometecu:
         self.rango_min_predic = 1
         self.rango_max_predic = 10
 
-        # 6. Creamos la estructura de la red con los datos de config_neo
+    
+    
+    def inicio_synapsis(self, nombre):
+        # Configuramos el cerebro
+        # Inicializa variables de entorno y configuración interna del objeto Cerebro        
+        #self.cerebro.setVariables(nombre)
+        self.nombre_synapsis = nombre
+        self.cerebro.setConfig([0.2, 1, 1, 1], nombre)
+
+        # Extraemos configuración necesaria para la Red
+        # Obtiene un diccionario o estructura con los parámetros de la arquitectura de la red
+        config_neo = self.cerebro.getConfig(nombre)
+
+        # Creamos la estructura de la red con los datos de config_neo
         # Instancia las capas y neuronas usando la tasa de aprendizaje y las neuronas por capa (1, 2 y 3)
         self.red.crearRed(
             float(config_neo["apren"]), 
@@ -41,7 +46,7 @@ class Ometecu:
             int(config_neo["capa3"]), 
             's', 's', 's'
         )
-    
+
     def estadisticaRed(self):
         # Retorna un resumen métrico o estado interno actual del rendimiento de la red
         return self.red.estadisticaRed()
@@ -68,10 +73,11 @@ class Ometecu:
         self.red.funcionActivacion(r1, r2, r3)
      
 
-    def set_config_red(self, capa_inicial, capa_intermedia, capa_final, synapsis=True):
+    def set_config_red(self, capa_inicial, capa_intermedia, capa_final):
+        synapsis = True
         # Actualiza la configuración en el Cerebro con la nueva distribución de neuronas por capa
-        self.cerebro.setConfig([0.2] + [capa_inicial, capa_intermedia, capa_final])
-        self.configNeo = self.cerebro.getConfig()
+        self.cerebro.setConfig([0.2] + [capa_inicial, capa_intermedia, capa_final], self.nombre_synapsis)
+        self.configNeo = self.cerebro.getConfig(self.nombre_synapsis)
         
         # Reinicia la red y la vuelve a construir desde cero con la nueva estructura
         self.red.reset()
@@ -80,8 +86,13 @@ class Ometecu:
         
         # Si está activo el flag y los tamaños coinciden, hereda los pesos guardados en la memoria
         if synapsis == True:
-            if len(self.cerebro.getMemoria()) == len(self.red.getMemoria()):
-                self.red.setMemoria(self.cerebro.getMemoria())
+            try:
+                self.cerebro.getMemoria(self.nombre_synapsis)
+            except FileNotFoundError:
+                self.set_memoria()
+
+            if len(self.cerebro.getMemoria(self.nombre_synapsis)) == len(self.red.getMemoria()):
+                self.red.setMemoria(self.cerebro.getMemoria(self.nombre_synapsis))
 
     def entrenamiento(self):
         # Ejecuta el proceso de aprendizaje repetidas veces según el número de ciclos configurados
@@ -111,8 +122,8 @@ class Ometecu:
         # Si se solicita transferencia de sinapsis y las dimensiones de memoria coinciden,
         # inyecta los pesos almacenados del Cerebro de vuelta a la Red antes de evaluar
         if synapsis == True:  
-            if len(self.cerebro.getMemoria()) == len(self.red.getMemoria()):
-                self.red.setMemoria(self.cerebro.getMemoria())
+            if len(self.cerebro.getMemoria(self.nombre_synapsis)) == len(self.red.getMemoria()):
+                self.red.setMemoria(self.cerebro.getMemoria(self.nombre_synapsis))
                 
         # Proceso estándar de inferencia: establece entradas, calcula y devuelve la salida predicha
         self.red.setValorEntradas(self.entradas)
@@ -128,7 +139,7 @@ class Ometecu:
 
     def set_memoria(self):
         # Transfiere los pesos sinápticos actuales de la red para respaldarlos en el objeto Cerebro
-        self.cerebro.setMemoria(self.red.getMemoria())
+        self.cerebro.setMemoria(self.red.getMemoria(), self.nombre_synapsis)
     
     def get_memoria(self):
         # Recupera y devuelve el arreglo lineal de pesos sinápticos que posee la red en este momento

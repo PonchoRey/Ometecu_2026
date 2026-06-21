@@ -11,6 +11,7 @@ array_poblacion_red = []
 
 for x in range(TAM_POBLACION_NEURONAL):
     red_neuronal = Ometecu()
+    red_neuronal.inicio_synapsis("ejemplo_genetico")
     red_neuronal.set_config_red(capa_inicial=1, capa_intermedia=3, capa_final=1)
     
     valor_aleatorio = [random.uniform(0.2, 0.8) for _ in red_neuronal.get_memoria()]
@@ -24,13 +25,9 @@ ag = AlgoritmoGenetico(
     num_generaciones=NUM_GENERACIONES
 )
 
-array_poblacion_red[0].set_memoria_genetico(ag.obtener_memoria())
 
 print("Se genera la poblacion y se asigna el fitness por primera vez")
 fitness_inicial = [1, 2, 9, 4, 5, 1]
 
 array_poblacion_red = ag.redes_genetico(fitness_inicial, array_poblacion_red)
 ag.estadisticas_poblacion()
-
-
-ag.guardar_memoria()

@@ -28,6 +28,7 @@ MODO_ENTRENAMIENTO_RAPIDO = True  # True para entrenar a ciegas a máxima veloci
 # --- Configuración Red Neuronal ---
 for x in range(TAM_POBLACION_NEURONAL):
     red_neuronal = Ometecu()
+    red_neuronal.inicio_synapsis("snake")
     # 23 entradas debido al radar de orientación directa de la manzana
     red_neuronal.set_config_red(capa_inicial=23, capa_intermedia=20, capa_final=4)
     # Híbrido: ReLU en capas ocultas, Lineal en la salida para desempate preciso
@@ -38,7 +39,7 @@ for x in range(TAM_POBLACION_NEURONAL):
 
 ag = AlgoritmoGenetico(
     tam_poblacion=len(array_poblacion_red), 
-    tasa_mutacion=0.05,  
+    tasa_mutacion=0.03,  
     num_generaciones=NUM_GENERACIONES
 )
 try: 

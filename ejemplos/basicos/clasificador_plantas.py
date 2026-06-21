@@ -40,6 +40,7 @@ for dato in datos_brutos:
 # --- 3. CONFIGURACIÓN Y ENTRENAMIENTO ---
 
 cerebro = Ometecu()
+cerebro.inicio_synapsis("plantas")
 # Arquitectura: 2 entradas, 3 neuronas ocultas, 1 salida (el diagnóstico)
 cerebro.set_config_red(capa_inicial=2, capa_intermedia=30, capa_final=1)
 

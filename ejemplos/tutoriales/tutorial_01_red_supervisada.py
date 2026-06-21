@@ -42,11 +42,12 @@ def ejecutar_ejemplo_supervisado():
     # PASO 2: INSTANCIAR Y CONFIGURAR LA RED NEURONAL (CEREBRO)
     # -----------------------------------------------------------------------
     cerebro = Ometecu()
-    
+    cerebro.inicio_synapsis("tutorial_01")
     # Configuramos la arquitectura de las capas:
     # capa_inicial: 2 neuronas (porque tenemos 2 datos de entrada)
     # capa_intermedia: 5 neuronas (capa oculta para procesar la lógica)
     # capa_final: 1 neurona (porque solo queremos 1 resultado de salida)
+    
     cerebro.set_config_red(capa_inicial=2, capa_intermedia=5, capa_final=1)
 
     # -----------------------------------------------------------------------

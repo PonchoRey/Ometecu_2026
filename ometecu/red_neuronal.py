@@ -224,27 +224,52 @@ class Red:
         Toma las entradas, las pasa por cada capa calculando su activación 
         hasta llegar a la salida.
         """
-         # --- Capa oculta Y1 ---
-        for neu1 in self.neuOcultasY1:
-            if self.funcionE == 's':
+         # --- Capa oculta Y1 optimizacion ---
+        if self.funcionE == 's':
+            for neu1 in self.neuOcultasY1:
                 neu1.calcularSalidaSigmoide()
-            elif self.funcionE == 'r':
+        elif self.funcionE == 'r':
+            for neu1 in self.neuOcultasY1:
                 neu1.calcularSalidaReLU()
-            elif self.funcionE == 't':
-                neu1.calcularSalidaHiperbolica()
+        elif self.funcionE == 't':
+            for neu2 in self.neuOcultasY1:
+                neu2.calcularSalidaHiperbolica()
+
+        #  # --- Capa oculta Y1 ---
+        # for neu1 in self.neuOcultasY1:
+        #     if self.funcionE == 's':
+        #         neu1.calcularSalidaSigmoide()
+        #     elif self.funcionE == 'r':
+        #         neu1.calcularSalidaReLU()
+        #     elif self.funcionE == 't':
+        #         neu1.calcularSalidaHiperbolica()
 
         # Recolecta las salidas de Y1 para usarlas como entradas en Y2
         auxN = [neu1.salida for neu1 in self.neuOcultasY1]
 
-        # --- Capa oculta Y2 ---
-        for neu2 in self.neuOcultasY2:
-            neu2.setValoresEntras(auxN)
-            if self.funcionO == 's':
+         # --- Capa oculta Y2 optimizacion ---
+        if self.funcionO == 's':
+            for neu2 in self.neuOcultasY2:
+                neu2.setValoresEntras(auxN)
                 neu2.calcularSalidaSigmoide()
-            elif self.funcionO == 'r':
+        elif self.funcionO == 'r':
+            for neu2 in self.neuOcultasY2:
+                neu2.setValoresEntras(auxN)
                 neu2.calcularSalidaReLU()
-            elif self.funcionO == 't':
+        elif self.funcionO == 't':
+            for neu2 in self.neuOcultasY2:
+                neu2.setValoresEntras(auxN)
                 neu2.calcularSalidaHiperbolica()
+
+        # # --- Capa oculta Y2 ---
+        # for neu2 in self.neuOcultasY2:
+        #     neu2.setValoresEntras(auxN)
+        #     if self.funcionO == 's':
+        #         neu2.calcularSalidaSigmoide()
+        #     elif self.funcionO == 'r':
+        #         neu2.calcularSalidaReLU()
+        #     elif self.funcionO == 't':
+        #         neu2.calcularSalidaHiperbolica()
 
         # Recolecta las salidas de Y2 para usarlas como entradas en la Capa de Salida
         aux = [neu2.salida for neu2 in self.neuOcultasY2]
