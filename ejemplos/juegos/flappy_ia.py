@@ -25,16 +25,17 @@ MODO_ENTRENAMIENTO_RAPIDO = True
 array_poblacion_red = []
 for _ in range(TAM_POBLACION):
     red = Ometecu()
-    red.set_config_red(capa_inicial=5, capa_intermedia=6, capa_final=2)
-    red.funcionActivacion("r", "r", "r")
+    red.inicio_synapsis("flappy")
+    red.set_config_red(capa_inicial=12, capa_intermedia=12, capa_final=2)
+    red.funcionActivacion("r", "r", "s")
     red.set_memoria_genetico([random.uniform(-1, 1) for _ in red.get_memoria()])
     array_poblacion_red.append(red)
 
-ag = AlgoritmoGenetico(tam_poblacion=TAM_POBLACION, tasa_mutacion=0.15, num_generaciones=1)
+ag = AlgoritmoGenetico(tam_poblacion=TAM_POBLACION, tasa_mutacion=0.03, num_generaciones=1)
 
 try:
     # Intentar cargar sinapsis previa si existe
-    for i in range(min(3, TAM_POBLACION)):
+    for i in range(TAM_POBLACION - 5):
         array_poblacion_red[i].set_memoria_genetico(ag.obtener_memoria("flappy"))
     print("Sinapsis de Flappy cargada con éxito!")
 except Exception as e:
@@ -83,7 +84,7 @@ def controlar_ia(pajaro=None, tubo=None, evento="paso", lista_pajaros=None):
         score_maximo = max(p.score for p in lista_pajaros)
 
         # Desactivar el entrenamiento rápido para pasar a visual
-        if contador_generaciones == 150:
+        if contador_generaciones == 100:
             MODO_ENTRENAMIENTO_RAPIDO = False
 
         # Aplicar cruzamiento y mutación para obtener la nueva población

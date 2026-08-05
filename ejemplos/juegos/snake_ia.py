@@ -14,7 +14,7 @@ pygame.init()
 # ==========================================
 #         CONFIGURACIÓN DEL GENÉTICO
 # ==========================================
-TAM_POBLACION_NEURONAL = 6  
+TAM_POBLACION_NEURONAL = 20  
 NUM_GENERACIONES = 1
 
 global array_poblacion_red, contador_generaciones, MODO_ENTRENAMIENTO_RAPIDO
@@ -28,27 +28,29 @@ MODO_ENTRENAMIENTO_RAPIDO = True  # True para entrenar a ciegas a máxima veloci
 # --- Configuración Red Neuronal ---
 for x in range(TAM_POBLACION_NEURONAL):
     red_neuronal = Ometecu()
-    # 23 entradas debido al radar de orientación directa de la manzana
-    red_neuronal.set_config_red(capa_inicial=23, capa_intermedia=20, capa_final=4)
+    red_neuronal.inicio_synapsis("snake")
+    # 15 entradas debido a: 8 laser + 4 dir_actual + 1 obtenida + 2 orientación
+    red_neuronal.set_config_red(capa_inicial=15, capa_intermedia=20, capa_final=4)
     # Híbrido: ReLU en capas ocultas, Lineal en la salida para desempate preciso
     red_neuronal.funcionActivacion("r", "r", "s")
-    valor_aleatorio = [random.uniform(-0.9, 0.9) for _ in red_neuronal.get_memoria()]
+    valor_aleatorio = [random.uniform(0.0, 0.9) for _ in red_neuronal.get_memoria()]
     red_neuronal.set_memoria_genetico(valor_aleatorio)
     array_poblacion_red.append(red_neuronal)
 
 ag = AlgoritmoGenetico(
     tam_poblacion=len(array_poblacion_red), 
-    tasa_mutacion=0.05,  
+    tasa_mutacion=0.0002,  
     num_generaciones=NUM_GENERACIONES
 )
-try: 
-    array_poblacion_red[0].set_memoria_genetico(ag.obtener_memoria("snake"))
-    array_poblacion_red[1].set_memoria_genetico(ag.obtener_memoria("snake"))
-    array_poblacion_red[2].set_memoria_genetico(ag.obtener_memoria("snake"))
-    
-    print("synapsis cargada!")
+
+try:
+    # Intentar cargar sinapsis previa si existe
+    for i in range(TAM_POBLACION_NEURONAL - 5):
+        array_poblacion_red[i].set_memoria_genetico(ag.obtener_memoria("snake"))
+    print("Sinapsis de snake cargada con éxito!")
 except Exception as e:
-    print("Error al cargar la synpasis:", e)
+    print("No se encontró sinapsis previa de snake, iniciando desde cero.")
+
 # ==========================================
 #         CONFIGURACIÓN GRÁFICA
 # ==========================================
@@ -84,7 +86,7 @@ def algoritmo_genetico(scores):
     print(f"Mejor Score de esta gen: {max(scores)}")
     
     # Después de 100 generaciones a ciegas, activa la pantalla para evaluar visualmente
-    if contador_generaciones >= 100:
+    if contador_generaciones >= 1000:
         MODO_ENTRENAMIENTO_RAPIDO = False
 
 def mostrar_puntuacion(puntos):
@@ -100,31 +102,40 @@ def generar_comida():
     comida_y = round(random.randrange(0, ALTO_PANTALLA - tamano_bloque) / 10.0) * 10.0
     return comida_x, comida_y
 
-def leer_estado_ia(cabeza_x, cabeza_y, comida_x, comida_y, x_cambio, y_cambio, tamano_bloque, comida_obtenida):
+def leer_estado_ia(cabeza_x, cabeza_y, comida_x, comida_y, x_cambio, y_cambio, tamano_bloque, comida_obtenida, lista_vibora):
     direcciones = [
         (0, -tamano_bloque), (tamano_bloque, -tamano_bloque), 
         (tamano_bloque, 0), (tamano_bloque, tamano_bloque),
         (0, tamano_bloque), (-tamano_bloque, tamano_bloque), 
         (-tamano_bloque, 0), (-tamano_bloque, -tamano_bloque)
     ]
-    vision_comida = [0.0] * 8
-    vision_paredes = [0.0] * 8
+    vision_laser = [0.0] * 8
+    
+    cuerpo_set = set(tuple(segmento) for segmento in lista_vibora[:-1])
     
     for i, (dx, dy) in enumerate(direcciones):
         x_actual = cabeza_x
         y_actual = cabeza_y
         distancia = 0
-        comida_detectada = False
         while True:
             x_actual += dx
             y_actual += dy
             distancia += 1
+            
+            # Si choca con pared
             if x_actual < 0 or x_actual >= ANCHO_PANTALLA or y_actual < 0 or y_actual >= ALTO_PANTALLA:
-                vision_paredes[i] = 1.0 / distancia
+                vision_laser[i] = 1.0 / distancia
                 break 
-            if not comida_detectada and x_actual == comida_x and y_actual == comida_y:
-                vision_comida[i] = 1.0 / distancia
-                comida_detectada = True
+                
+            # Si choca con su propio cuerpo
+            if (x_actual, y_actual) in cuerpo_set:
+                vision_laser[i] = 1.0 / distancia
+                break
+                
+            # Si choca con comida
+            if x_actual == comida_x and y_actual == comida_y:
+                vision_laser[i] = 1.0 / distancia
+                break
 
     dir_arriba = 1 if y_cambio == -tamano_bloque else 0
     dir_abajo = 1 if y_cambio == tamano_bloque else 0
@@ -132,7 +143,7 @@ def leer_estado_ia(cabeza_x, cabeza_y, comida_x, comida_y, x_cambio, y_cambio, t
     dir_derecha = 1 if x_cambio == tamano_bloque else 0
     
     direccion_actual = [dir_arriba, dir_abajo, dir_izquierda, dir_derecha]
-    return vision_comida + vision_paredes + direccion_actual + [comida_obtenida]
+    return vision_laser + direccion_actual + [comida_obtenida]
 
 def red_neuronal_simulada(estado, index):
     red_neuronal = array_poblacion_red[index]
@@ -234,7 +245,7 @@ def juego_principal():
             comida_dir_x = 1.0 if comida_x > x_actual else (-1.0 if comida_x < x_actual else 0.0)
             comida_dir_y = 1.0 if comida_y > y_actual else (-1.0 if comida_y < y_actual else 0.0)
             
-            estado_base = leer_estado_ia(x_actual, y_actual, comida_x, comida_y, x_cambio, y_cambio, tamano_bloque, comida_obtenida)
+            estado_base = leer_estado_ia(x_actual, y_actual, comida_x, comida_y, x_cambio, y_cambio, tamano_bloque, comida_obtenida, lista_vibora)
             estado_completo = estado_base + [comida_dir_x, comida_dir_y]
             
             salida_ia = red_neuronal_simulada(estado_completo, index_redes)

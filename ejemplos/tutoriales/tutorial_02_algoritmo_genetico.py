@@ -46,6 +46,7 @@ def ejecutar_mascotas_virtuales():
     mascotas = []
     for _ in range(TAMANO_POBLACION):
         cerebro_mascota = Ometecu()
+        cerebro_mascota.inicio_synapsis("mascota")
         # 2 entradas (Hambre, Sueño), 4 neuronas ocultas para procesar, 2 salidas (Comer, Dormir)
         cerebro_mascota.set_config_red(capa_inicial=2, capa_intermedia=4, capa_final=2)
         cerebro_mascota.funcionActivacion('r', 'r', 's') # Usamos sigmoide al final para obtener valores entre 0 y 1
